@@ -7,16 +7,13 @@
     const inspectorWrapper = document.createElement("div");
     mainWrapper.id = "main";
     inspectorWrapper.id = "inspector";
+    inspectorWrapper.style.marginTop = "25px";
     //run on body elements and move them under wrapper.
     while (document.body.firstChild) {
       mainWrapper.appendChild(document.body.firstChild);
     }
     document.body.appendChild(mainWrapper);
     document.body.appendChild(inspectorWrapper);
-
-    //append some styles to body and inner wrappers
-
-    appendGlobalStyles(mainWrapper, inspectorWrapper);
 
     //do the magic
     renderNodes(mainWrapper, inspectorWrapper);
@@ -54,7 +51,11 @@
 
   const createInspectorNode = name => {
     const inspectorNode = document.createElement("div");
-    const textNode = document.createTextNode(name);
+
+    const textNode =
+      name !== "MAIN"
+        ? document.createTextNode(name)
+        : document.createTextNode("BODY");
     inspectorNode.appendChild(textNode);
     return inspectorNode;
   };
@@ -76,7 +77,6 @@
   const handleDragStart = event => {
     event.stopPropagation();
     event.target.style.opacity = "0.5";
-
     event.dataTransfer.setData("srcElementID", event.target.id);
   };
 
@@ -93,6 +93,7 @@
     } else {
       event.target.style.cssText += "box-shadow:inset 0 0 0 4px #000";
     }
+
     return false;
   };
 
@@ -158,9 +159,6 @@
   const handleDragEnd = event => {
     event.stopPropagation();
     event.target.style.opacity = "1";
-    const bodyElement = getBodyElementByInspectorID(event.target.id);
-    bodyElement.style.background = "none";
-    bodyElement.parentNode.style.background = "none";
   };
 
   const getBodyElementByInspectorID = inspectorID => {
@@ -185,15 +183,6 @@
       element.style.background = randomColor;
       backgroundColors[element.textContent] = randomColor;
     }
-  };
-
-  appendGlobalStyles = (mainWrapper, inspectorWrapper) => {
-    inspectorWrapper.style.cssText +=
-      "display:flex; width:100%; padding-bottom:50px; background-color:#eee;";
-    mainWrapper.style.margin = "5px";
-    document.documentElement.style.height = "100%";
-    document.body.style.cssText +=
-      "height:100%; margin:0; display:flex; flex-direction:column; justify-content:space-between;";
   };
 
   //Helpers
